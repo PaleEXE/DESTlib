@@ -1,0 +1,17 @@
+{
+    "sample_size": 12,
+    "random_seed": 7122006,
+    "time_between_distro": "uniform",
+    "time_between_params": {
+        "a": 1,
+        "b": 7
+    },
+    "service_time_distro": "uniform",
+    "service_time_params": {
+        "a": 1,
+        "b": 4
+    },
+    "system_name": "TollBooth",
+    "entity_name": "Car",
+    "time_unit": "Minutes"
+}
