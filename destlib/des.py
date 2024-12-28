@@ -185,6 +185,38 @@ class DES:
                     "idle_time",
                 ]
         )
+    def copute_statistics(self) -> Dict[str, float]:
+        """
+        compute & returns various statistics for the sim 
+        Return a dictionary 
+        """
+        if self._df.empty:
+            raise ValueError("Simulation data is empty. Run the simulation before calculating statistics.")
+        avg_waiting_time = self._df["wait_time"].mean() 
+        avg_service_time = self._df["service_time"].mean() 
+        avg_time_between_arrivals = self._df["time_between"].mean() 
+        idle_time_percentage = (self._df["idle_time"].sum() / self._df["end_time"].values[-1]) * 100 
+        std_dev_waiting_time = self._df["wait_time"].std()
+        stats = { 
+            "average_waiting_time": avg_waiting_time, 
+            "average_service_time": avg_service_time,
+            "average_time_between_arrivals": avg_time_between_arrivals, 
+            "idle_time_percentage": idle_time_percentage, 
+            "std_dev_waiting_time": std_dev_waiting_time, 
+        } 
+        return stats
+
+    def compare_with_expected(self, expected_service_time: float, expected_time_between: float) -> Dict[str, float]:
+        """
+        Compares the computed statistics with the expected values. 
+        Returns: A dictionary contain the comparison results. 
+        """
+        computed_stats = self.compute_statistics()
+        comparison = {
+            "average_service_time_vs_expected": computed_stats["average_service_time"] - expected_service_time,
+            "average_time_between_arrivals_vs_expected": computed_stats["average_time_between_arrivals"] - expected_time_between
+        }
+        return comparison
 
     def show(self, n: int = 5) -> None:
         print(self._df[:n].to_markdown())
