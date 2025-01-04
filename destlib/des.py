@@ -185,7 +185,7 @@ class DES:
                     "idle_time",
                 ]
         )
-    def copute_statistics(self) -> Dict[str, float]:
+    def compute_statistics(self) -> Dict[str, float]:
         """
         compute & returns various statistics for the sim 
         Return a dictionary 
