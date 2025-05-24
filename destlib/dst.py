@@ -37,8 +37,12 @@ class DST:
             args_ranges = {}
 
         self._sim_class = sim_class
-        self._sim_class_signature: inspect.Signature = inspect.signature(sim_class.__init__)
-        self._sim_class_parameters: Dict[str, Tuple[str, Any]] = DST.function_signature_to_dict(sim_class.__init__)
+        self._sim_class_signature: inspect.Signature = inspect.signature(
+            sim_class.__init__
+        )
+        self._sim_class_parameters: Dict[str, Tuple[str, Any]] = (
+            DST.function_signature_to_dict(sim_class.__init__)
+        )
         self._behaviors: List[Callable] = behaviors
         self._behaviors_calls: Optional[int] = behaviors_calls
         self._args_ranges: Optional[Dict[str, Tuple[int, int]]] = args_ranges
@@ -46,33 +50,33 @@ class DST:
         self._random_seed: Optional[int] = random_seed
         self._instant_number: int = instant_number
 
-    def set_sim_class(self, sim_class: Type) -> 'DST':
+    def set_sim_class(self, sim_class: Type) -> "DST":
         self._sim_class = sim_class
         self._sim_class_signature = inspect.signature(sim_class.__init__)
         self._sim_class_parameters = DST.function_signature_to_dict(sim_class.__init__)
         return self
 
-    def set_behaviors(self, behaviors: List[Callable]) -> 'DST':
+    def set_behaviors(self, behaviors: List[Callable]) -> "DST":
         self._behaviors = behaviors
         return self
 
-    def set_behaviors_calls(self, behaviors_calls: int) -> 'DST':
+    def set_behaviors_calls(self, behaviors_calls: int) -> "DST":
         self._behaviors_calls = behaviors_calls
         return self
 
-    def set_weights(self, weights: List[int]) -> 'DST':
+    def set_weights(self, weights: List[int]) -> "DST":
         self._weights = weights
         return self
 
-    def set_args_ranges(self, **args_ranges: Dict[str, Tuple[int, int]]) -> 'DST':
+    def set_args_ranges(self, **args_ranges: Dict[str, Tuple[int, int]]) -> "DST":
         self._args_ranges = args_ranges
         return self
 
-    def set_seed(self, random_seed: int) -> 'DST':
+    def set_seed(self, random_seed: int) -> "DST":
         self._random_seed = random_seed
         return self
 
-    def set_instant_number(self, instant_number: int) -> 'DST':
+    def set_instant_number(self, instant_number: int) -> "DST":
         self._instant_number = instant_number
         return self
 
@@ -109,8 +113,14 @@ class DST:
         param_dict = {}
 
         for name, param in sig.parameters.items():
-            annotation = param.annotation if param.annotation != inspect.Parameter.empty else "Any"
-            default = param.default if param.default != inspect.Parameter.empty else None
+            annotation = (
+                param.annotation
+                if param.annotation != inspect.Parameter.empty
+                else "Any"
+            )
+            default = (
+                param.default if param.default != inspect.Parameter.empty else None
+            )
 
             rizz = type_pattern(string=str(annotation))
             rizz = annotation if not rizz else rizz[0][1:-1]
@@ -119,7 +129,9 @@ class DST:
 
         return param_dict
 
-    def run(self, with_defaults: bool = True, state_history: bool = False) -> Type[_sim_class]:
+    def run(
+        self, with_defaults: bool = True, state_history: bool = False
+    ) -> Type[_sim_class]:
         if self._random_seed is not None:
             random.seed(self._random_seed)
 
@@ -147,9 +159,9 @@ class DST:
         for arg, (arg_type, default) in self._sim_class_parameters.items():
             if arg in self._args_ranges:
                 lower, upper = self._args_ranges[arg]
-                if arg_type == 'str':
+                if arg_type == "str":
                     args[arg] = str(random.randint(lower, upper))
-                elif arg_type == 'float':
+                elif arg_type == "float":
                     args[arg] = random.uniform(lower, upper)
                 else:
                     args[arg] = random.randint(lower, upper)
@@ -158,7 +170,9 @@ class DST:
             elif arg == "self":
                 continue
             else:
-                raise Exception(f"{arg} values range is not specified and no default was specified")
+                raise Exception(
+                    f"{arg} values range is not specified and no default was specified"
+                )
         return args
 
 

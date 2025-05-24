@@ -11,13 +11,13 @@ class TimeUnit:
     Year: str = "Years"
 
     _conversion_factors: Dict[str, int] = {
-        Sec:   1,
-        Min:   60,
-        Hour:  3600,
-        Day:   86400,
-        Week:  604800,
+        Sec: 1,
+        Min: 60,
+        Hour: 3600,
+        Day: 86400,
+        Week: 604800,
         Month: 2592000,  # Assuming 30 days in a month
-        Year:  31536000  # Assuming 365 days in a year
+        Year: 31536000,  # Assuming 365 days in a year
     }
 
     @classmethod
@@ -52,7 +52,9 @@ class TimeUnit:
         return value * cls._conversion_factors[unit]
 
     @classmethod
-    def from_seconds(cls, seconds: Union[int, float], target_unit: str) -> Union[int, float]:
+    def from_seconds(
+        cls, seconds: Union[int, float], target_unit: str
+    ) -> Union[int, float]:
         """
         Converts seconds into the target time unit.
 
