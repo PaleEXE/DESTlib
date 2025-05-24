@@ -1,3 +1,4 @@
+from matplotlib.pylab import poisson
 from destlib import DES, run_simulations, uniform, TimeUnit
 
 
@@ -21,7 +22,7 @@ if __name__ == "__main__":
     patiants = (
         DES()
         .set_sample_size(100)
-        .set_time_between_distro(uniform, a=1, b=10)
+        .set_time_between_distro(poisson, lam=7.0)
         .set_service_time_distro(uniform, a=1, b=30)
         .set_num_servers(3)
         .set_levels(
@@ -36,7 +37,5 @@ if __name__ == "__main__":
 
     patiants.run()
     patiants.plot()
-    
-    print(
-        patiants.df.groupby("level")["wait_time"].mean()
-    )
+
+    print(patiants.df.groupby("level")["wait_time"].mean())

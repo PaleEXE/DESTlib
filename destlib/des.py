@@ -12,6 +12,36 @@ import pandas as pd
 from .time_units import TimeUnit
 
 
+distro_mapping: dict[str, Callable[..., float]] = {
+    "uniform": random.uniform,
+    "triangular": random.triangular,
+    "betavariate": random.betavariate,
+    "expovariate": random.expovariate,
+    "gammavariate": random.gammavariate,
+    "gauss": random.gauss,
+    "lognormvariate": random.lognormvariate,
+    "normalvariate": random.normalvariate,
+    "vonmisesvariate": random.vonmisesvariate,
+    "paretovariate": random.paretovariate,
+    "weibullvariate": random.weibullvariate,
+    "poisson": np.random.poisson,
+    "binomial": np.random.binomial,
+    "geometric": np.random.geometric,
+    "exponential": np.random.exponential,
+    "chisquare": np.random.chisquare,
+    "gamma": np.random.gamma,
+    "beta": np.random.beta,
+    "normal": np.random.normal,
+    "laplace": np.random.laplace,
+    "logistic": np.random.logistic,
+    "f": np.random.f,
+    "wald": np.random.wald,
+    "rayleigh": np.random.rayleigh,
+    "pareto": np.random.pareto,
+    "zipf": np.random.zipf,
+}
+
+
 def _calculate_times(time_between: np.ndarray, service_time: np.ndarray) -> np.ndarray:
     """
     Calculate arrival, start, end, wait, system, and idle times for a single-server queue.
@@ -255,7 +285,7 @@ class DES:
         self._service_time_params = service_time_params
         self._num_servers = num_servers
         self._levels = levels
-        self._levels_waights = levels_prob
+        self._levels_prob = levels_prob
         self._entity_name = entity_name
         self._system_name = system_name
         self._sim_number = sim_number
@@ -354,19 +384,18 @@ class DES:
         """
         return self._levels
 
-
     def set_levels_prob(self, levels_prob: list[float]) -> "DES":
         """
         Set the level probabilities (weights).
         """
-        self._levels_waights = levels_prob
+        self._levels_prob = levels_prob
         return self
 
     def get_levels_prob(self) -> list[float] | None:
         """
         Get the current level probabilities (weights).
         """
-        return self._levels_waights
+        return self._levels_prob
 
     def set_num_servers(self, num_servers: int) -> "DES":
         """
@@ -434,7 +463,7 @@ class DES:
         return np.random.choice(
             list(range(len(self._levels))),
             size=self._sample_size,
-            p=self._levels_waights,
+            p=self._levels_prob,
         )
 
     def run(self) -> None:
@@ -467,7 +496,7 @@ class DES:
                 ],
             )
             self._df["level"] = self._df["level"].apply(
-                lambda x: self._levels[x] # type: ignore
+                lambda x: self._levels[x]  # type: ignore
             )
             return
 
@@ -657,6 +686,9 @@ class DES:
             "system_name": self._system_name,
             "entity_name": self._entity_name,
             "time_unit": self._time_unit,
+            "num_servers": self._num_servers,
+            "levels": self._levels,
+            "levels_prob": self._levels_prob,
         }
         with open(metadata_path, "w") as metadata_file:
             json.dump(self._metadata, metadata_file, indent=4)
@@ -694,44 +726,40 @@ class DES:
     @classmethod
     def load_from(cls, metadata_path: str) -> "DES":
         """
-        Load a DES simulation object from a metadata JSON file.
+        Load a DES simulation object from a metadata JSON file, including levels and num_servers.
         """
         with open(metadata_path, "r") as metadata_file:
             metadata: dict[str, Any] = json.load(metadata_file)
 
-        distro_mapping: dict[str, Callable[..., float]] = {
-            "uniform": random.uniform,
-            "triangular": random.triangular,
-            "betavariate": random.betavariate,
-            "expovariate": random.expovariate,
-            "gammavariate": random.gammavariate,
-            "gauss": random.gauss,
-            "lognormvariate": random.lognormvariate,
-            "normalvariate": random.normalvariate,
-            "vonmisesvariate": random.vonmisesvariate,
-            "paretovariate": random.paretovariate,
-            "weibullvariate": random.weibullvariate,
-        }
-
         des_instance: DES = (
             cls()
-            .set_sample_size(metadata["sample_size"])
-            .set_seed(metadata["random_seed"])
-            .set_system_name(metadata["system_name"])
-            .set_entity_name(metadata["entity_name"])
-            .set_time_unit(metadata["time_unit"])
+            .set_sample_size(metadata.get("sample_size"))  # type: ignore
+            .set_seed(metadata.get("random_seed"))  # type: ignore
+            .set_system_name(metadata.get("system_name"))  # type: ignore
+            .set_entity_name(metadata.get("entity_name"))  # type: ignore
+            .set_time_unit(metadata.get("time_unit"))  # type: ignore
         )
 
-        if metadata["time_between_distro"] in distro_mapping:
+        # Set number of servers if present
+        if "num_servers" in metadata:
+            des_instance.set_num_servers(metadata["num_servers"])
+
+        # Set levels and probabilities if present
+        if "levels" in metadata:
+            des_instance.set_levels(metadata["levels"], metadata.get("levels_prob"))
+
+        # Set time_between distribution and params
+        if metadata.get("time_between_distro") in distro_mapping:
             des_instance.set_time_between_distro(
                 distro_mapping[metadata["time_between_distro"]],
-                **metadata["time_between_params"],
+                **metadata.get("time_between_params", {}),
             )
 
-        if metadata["service_time_distro"] in distro_mapping:
+        # Set service_time distribution and params
+        if metadata.get("service_time_distro") in distro_mapping:
             des_instance.set_service_time_distro(
                 distro_mapping[metadata["service_time_distro"]],
-                **metadata["service_time_params"],
+                **metadata.get("service_time_params", {}),
             )
 
         return des_instance
