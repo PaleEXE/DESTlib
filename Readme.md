@@ -60,6 +60,8 @@ for i, sim in enumerate(run_simulations(sim, 3)):
     sim.plot()
 ```
 
+Priority Levels Example
+
 ```python
 from destlib import DES, poisson, uniform, TimeUnit
 
