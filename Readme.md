@@ -94,4 +94,5 @@ print(patients.df.groupby("level")["wait_time"].mean())
 ## License
 MIT License
 <hr>
+
 For more details, see the code and docstrings in each module.
