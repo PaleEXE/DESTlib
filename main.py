@@ -1,5 +1,6 @@
 from matplotlib.pylab import poisson
 from destlib import DES, run_simulations, uniform, TimeUnit
+from destlib import DES, uniform, TimeUnit
 
 
 if __name__ == "__main__":
