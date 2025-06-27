@@ -20,11 +20,13 @@ if __name__ == "__main__":
         car.plot(v_lines=True)  # type: ignore"""
 
     patiants = (
+    patients = (
         DES()
         .set_sample_size(100)
         .set_time_between_distro(poisson, lam=7.0)
         .set_service_time_distro(uniform, a=1, b=30)
         .set_num_servers(3)
+        .set_num_servers(30)
         .set_levels(
             levels=["Critical", "Severe", "Moderate"],
             levels_prob=[0.1, 0.3, 0.6],
@@ -36,6 +38,6 @@ if __name__ == "__main__":
     )
 
     patiants.run()
-    patiants.plot()
 
     print(patiants.df.groupby("level")["wait_time"].mean())
+    print(patients.df.groupby("level")["wait_time"].mean())
