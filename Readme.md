@@ -63,17 +63,18 @@ for i, sim in enumerate(run_simulations(sim, 3)):
 Priority Levels Example
 
 ```python
-from destlib import DES, poisson, uniform, TimeUnit
+from matplotlib.pylab import poisson
+from destlib import DES, uniform, TimeUnit
 
 patients = (
     DES()
-    .set_sample_size(100)
-    .set_time_between_distro(poisson, lam=7.0)
+    .set_sample_size(30)
+    .set_time_between_distro(poisson, lam=8.0)
     .set_service_time_distro(uniform, a=1, b=30)
     .set_num_servers(3)
     .set_levels(
         levels=["Critical", "Severe", "Moderate"],
-        levels_prob=[0.1, 0.3, 0.6],
+        levels_prob=[0.2, 0.4, 0.4],
     )
     .set_seed(7122004)
     .set_system_name("Hospital")
@@ -83,8 +84,31 @@ patients = (
 
 patients.run()
 patients.plot()
+
 print(patients.df.groupby("level")["wait_time"].mean())
+
+patients.save_to("csv", True, True)
 ```
+
+## Outputs
+### Generated Data:
+![data](imgs/csv.png)
+### Some Statistics:
+```json
+{
+  "mean_time_between": 8.333,
+  "mean_service_time": 13.633,
+  "mean_idle_time": 12.333,
+  "mean_waiting_time for each Patient": 0.933,
+  "mean_waiting_time for levels": {
+    "Critical": 0.143,
+    "Moderate": 1.0,
+    "Severe": 1.444
+  }
+}
+```
+### System Flow:
+![plot](imgs/Figure_2.png)
 
 ## Modules
 - destlib.des: DES simulation engine (DES)
