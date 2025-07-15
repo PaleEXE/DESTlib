@@ -697,8 +697,10 @@ class DES:
         """
         Save simulation statistics to a JSON file.
         """
-        statistics_path: str = path.replace(".csv", "_statistics.json").replace(
-            ".json", "_statistics.json"
+        statistics_path: str = (
+            path.replace(".csv", "_statistics.json")
+            .replace(".json", "_statistics.json")
+            .replace("xlsx", "_statistics.json")
         )
 
         if self._df.empty:
@@ -706,18 +708,17 @@ class DES:
                 "Simulation data is empty. Run the simulation before calculating statistics."
             )
 
-        system_time: int = (
-            self._df["end_time"].values[-1] - self._df["arrival_time"].values[0]
-        )
-
-        statistics: dict[str, float] = {
+        statistics: dict[str, float | dict] = {
             "mean_time_between": round(self._df["time_between"].mean(), 3),
             "mean_service_time": round(self._df["service_time"].mean(), 3),
             "mean_idle_time": round(self._df["idle_time"].mean(), 3),
-            "mean_waiting_time": round(self._df["wait_time"].sum() / system_time, 3),
             f"mean_waiting_time for each {self._entity_name}": round(
                 self._df["wait_time"].mean(), 3
             ),
+            "mean_waiting_time for levels": {
+                level: round(mean, 3)
+                for level, mean in self._df.groupby("level")["wait_time"].mean().items()
+            },
         }
 
         with open(statistics_path, "w") as stats_file:

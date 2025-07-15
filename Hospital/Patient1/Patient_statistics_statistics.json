@@ -1,0 +1,11 @@
+{
+    "mean_time_between": 8.333,
+    "mean_service_time": 13.633,
+    "mean_idle_time": 12.333,
+    "mean_waiting_time for each Patient": 0.933,
+    "mean_waiting_time for levels": {
+        "Critical": 0.143,
+        "Moderate": 1.0,
+        "Severe": 1.444
+    }
+}
