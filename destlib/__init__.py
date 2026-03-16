@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from random import (
     uniform,
     gauss,
@@ -30,17 +32,20 @@ from numpy.random import (
     zipf,
 )
 
-from .des import *
-from .dst import *
-from .time_units import *
+from typing import Iterator
+
+from .des import DES, des_run_simulations
+from .dst import DST, dst_run_simulations
+from .time_units import TimeUnit
 
 __all__ = [
-    "des",
-    "dst",
-    "time_units",
     "DES",
     "DST",
+    "TimeUnit",
     "run_simulations",
+    "des_run_simulations",
+    "dst_run_simulations",
+    # random distributions re-exported for convenience
     "uniform",
     "gauss",
     "triangular",
@@ -67,18 +72,18 @@ __all__ = [
     "rayleigh",
     "pareto",
     "zipf",
-    "TimeUnit",
 ]
 
 
 def run_simulations(
-    simulation: Union[DES, DST],
+    simulation: DES | DST,
     n_times: int,
-    **kwargs,  # noqa: F405
-) -> Iterator[Union[DES, DST]]:  # noqa: F405
-    if isinstance(simulation, DES):  # noqa: F405
-        return des_run_simulations(simulation, n_times)  # noqa: F405
-    if isinstance(simulation, DST):  # noqa: F405
-        return dst_run_simulations(simulation, n_times, **kwargs)  # noqa: F405
+    **kwargs: object,
+) -> Iterator[DES] | Iterator[DST]:
+    """Dispatch to the appropriate runner based on simulation type."""
+    if isinstance(simulation, DES):
+        return des_run_simulations(simulation, n_times)
+    if isinstance(simulation, DST):
+        return dst_run_simulations(simulation, n_times, **kwargs)
 
-    raise TypeError(f"{simulation} is not a des_lib or DST")
+    raise TypeError(f"{simulation} is not a DES or DST instance")

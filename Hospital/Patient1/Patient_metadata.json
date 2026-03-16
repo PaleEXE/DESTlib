@@ -1,0 +1,27 @@
+{
+    "sample_size": 30,
+    "random_seed": 7122004,
+    "time_between_distro": "poisson",
+    "time_between_params": {
+        "lam": 8.0
+    },
+    "service_time_distro": "uniform",
+    "service_time_params": {
+        "a": 1,
+        "b": 30
+    },
+    "system_name": "Hospital",
+    "entity_name": "Patient",
+    "time_unit": "Minutes",
+    "num_servers": 3,
+    "levels": [
+        "Critical",
+        "Severe",
+        "Moderate"
+    ],
+    "levels_prob": [
+        0.2,
+        0.4,
+        0.4
+    ]
+}

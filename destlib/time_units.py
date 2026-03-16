@@ -1,4 +1,4 @@
-from typing import List, Dict, Union
+from __future__ import annotations
 
 
 class TimeUnit:
@@ -10,18 +10,18 @@ class TimeUnit:
     Month: str = "Months"
     Year: str = "Years"
 
-    _conversion_factors: Dict[str, int] = {
+    _conversion_factors: dict[str, int] = {
         Sec: 1,
         Min: 60,
         Hour: 3600,
         Day: 86400,
         Week: 604800,
-        Month: 2592000,  # Assuming 30 days in a month
-        Year: 31536000,  # Assuming 365 days in a year
+        Month: 2592000,   # Assuming 30 days in a month
+        Year: 31536000,   # Assuming 365 days in a year
     }
 
     @classmethod
-    def all_units(cls) -> List[str]:
+    def all_units(cls) -> list[str]:
         """Returns all available time units."""
         return list(cls._conversion_factors.keys())
 
@@ -31,19 +31,12 @@ class TimeUnit:
         return unit in cls._conversion_factors
 
     @classmethod
-    def to_seconds(cls, value: Union[int, float], unit: str) -> Union[int, float]:
+    def to_seconds(cls, value: int | float, unit: str) -> int | float:
         """
         Converts a given value and unit to seconds.
 
-        Args:
-            value (int | float): The value to convert.
-            unit (str): The time unit.
-
-        Returns:
-            float: The equivalent value in seconds.
-
         Raises:
-            ValueError: If the unit is invalid.
+            ValueError: If the unit is invalid or value is negative.
         """
         if not cls.is_valid_unit(unit):
             raise ValueError(f"Invalid time unit: {unit}")
@@ -52,21 +45,12 @@ class TimeUnit:
         return value * cls._conversion_factors[unit]
 
     @classmethod
-    def from_seconds(
-        cls, seconds: Union[int, float], target_unit: str
-    ) -> Union[int, float]:
+    def from_seconds(cls, seconds: int | float, target_unit: str) -> int | float:
         """
         Converts seconds into the target time unit.
 
-        Args:
-            seconds (float): The number of seconds.
-            target_unit (str): The desired time unit.
-
-        Returns:
-            float: The equivalent value in the target unit.
-
         Raises:
-            ValueError: If the target unit is invalid.
+            ValueError: If the target unit is invalid or value is negative.
         """
         if not cls.is_valid_unit(target_unit):
             raise ValueError(f"Invalid time unit: {target_unit}")
